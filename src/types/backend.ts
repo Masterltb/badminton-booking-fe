@@ -1,5 +1,7 @@
 import { Role, UserStatus, VenueStatus, BookingStatus, PaymentMethod } from './enums';
 
+// Types for Backend Responses
+
 export interface UserResponse {
   id: number;
   email: string;
@@ -35,12 +37,18 @@ export interface VenueResponse {
   courts?: CourtResponse[]; // Optional depending on detail view
 }
 
+export interface CourtSlot {
+  startTime: string; // ISO 8601
+  endTime: string;   // ISO 8601
+}
+
 export interface CourtResponse {
   id: number;
   name: string;
   venueId: number;
-  status: string; // Assuming active/inactive
+  status: string; 
   pricePerHour: number;
+  occupiedSlots?: CourtSlot[];
 }
 
 export interface BookingResponse {

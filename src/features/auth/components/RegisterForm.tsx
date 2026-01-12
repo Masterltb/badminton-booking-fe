@@ -39,12 +39,12 @@ export const RegisterForm = () => {
 
   const mutation = useMutation({
     mutationFn: registerWithEmail,
-    onSuccess: () => {
-      setSuccessMsg('Đăng ký thành công! Đang chuyển hướng...');
-      setTimeout(() => navigate('/auth/login'), 2000);
+    onSuccess: (_, variables) => {
+      setSuccessMsg('Đăng ký thành công! Vui lòng kiểm tra email để lấy mã OTP.');
+      setTimeout(() => navigate('/auth/verify-otp', { state: { email: variables.email } }), 1500);
     },
     onError: (error: any) => {
-      const msg = error.message || 'Đăng ký thất bại';
+      const msg = error.response?.data?.message || error.message || 'Đăng ký thất bại';
       setErrorMsg(msg);
     },
   });

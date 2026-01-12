@@ -6,6 +6,7 @@ import { useMutation } from '@tanstack/react-query';
 import { loginWithEmail } from '../api/login';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useState } from 'react';
+import { Role } from '@/types/enums';
 
 const loginSchema = z.object({
   email: z.string().email('Email không hợp lệ'),
@@ -16,8 +17,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export const LoginForm = () => {
   const navigate = useNavigate();
-  const setTokens = useAuthStore((state) => state.setTokens);
-  const setUser = useAuthStore((state) => state.setUser);
+  const login = useAuthStore((state) => state.login);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const {
@@ -31,9 +31,16 @@ export const LoginForm = () => {
   const mutation = useMutation({
     mutationFn: loginWithEmail,
     onSuccess: (data) => {
-      setTokens(data.accessToken, data.refreshToken);
-      setUser(data.user);
-      navigate('/'); // Redirect to Home
+      login(data.user, data.accessToken, data.refreshToken);
+      
+      // Redirect based on Role
+      if (data.user.role === Role.ADMIN) {
+        navigate('/admin');
+      } else if (data.user.role === Role.OWNER) {
+        navigate('/partner');
+      } else {
+        navigate('/');
+      }
     },
     onError: (error: any) => {
       // Backend returns { message: "..." }

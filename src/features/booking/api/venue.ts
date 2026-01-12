@@ -1,7 +1,8 @@
 import api from '@/config/api';
 import type { VenueResponse, BookingResponse, Page } from '@/types/backend';
+import type { CreateBookingPayload, BookingSchedulePayload } from '../types';
 
-export const getVenues = async (params?: { page?: number; size?: number; search?: string }): Promise<Page<VenueResponse>> => {
+export const getVenues = async (params?: { page?: number; size?: number; keyword?: string; sortBy?: string; sortDir?: string }): Promise<Page<VenueResponse>> => {
   const response = await api.get<Page<VenueResponse>>('/public/venues', { 
     params,
     headers: {
@@ -16,25 +17,27 @@ export const getVenueById = async (id: number): Promise<VenueResponse> => {
   return response.data;
 };
 
-export const createBooking = async (data: any): Promise<BookingResponse> => {
-  // data includes: courtId, startTime, endTime, paymentMethod
+export const createBooking = async (data: CreateBookingPayload): Promise<BookingResponse> => {
   const response = await api.post<BookingResponse>('/bookings', data);
   return response.data;
 };
 
-export const getBookedSlots = async (courtId: number, date: string): Promise<string[]> => {
-  // TODO: Replace with real API call when Backend is ready
-  // const response = await api.get<string[]>(`/public/bookings/occupied`, { params: { courtId, date } });
-  // return response.data;
-
-  // Mocking based on date to be consistent
-  console.log(`[MOCK] Fetching slots for Court ${courtId} on ${date}`);
-  
-  // Simulate some busy slots on weekends
-  const day = new Date(date).getDay();
-  if (day === 0 || day === 6) { // Sat/Sun
-      return ['16:00', '17:00', '19:00'];
-  }
-  
-  return ['18:00']; 
+export const createBookingSchedule = async (data: BookingSchedulePayload): Promise<BookingResponse[]> => {
+  const response = await api.post<BookingResponse[]>('/bookings/recurring', data);
+  return response.data;
 };
+
+export const getMyBookings = async (params?: { page?: number; size?: number }): Promise<Page<BookingResponse>> => {
+  const response = await api.get<Page<BookingResponse>>('/bookings/my-bookings', { params });
+  return response.data;
+};
+
+export const cancelBooking = async (id: number): Promise<void> => {
+  await api.post(`/bookings/${id}/cancel`);
+};
+
+export const getBookingById = async (id: number): Promise<BookingResponse> => {
+  const response = await api.get<BookingResponse>(`/bookings/${id}`);
+  return response.data;
+};
+

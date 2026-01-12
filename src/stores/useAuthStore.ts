@@ -1,24 +1,17 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-
-interface User {
-  id: string;
-  email: string;
-  fullName: string;
-  role: 'ADMIN' | 'OWNER' | 'USER';
-  avatarUrl?: string;
-}
+import type { UserResponse } from '@/types/backend';
 
 interface AuthState {
-  user: User | null;
+  user: UserResponse | null;
   accessToken: string | null;
   refreshToken: string | null;
   isAuthenticated: boolean;
   
   // Actions
   setTokens: (accessToken: string, refreshToken: string) => void;
-  setUser: (user: User) => void;
-  login: (user: User, accessToken: string, refreshToken: string) => void;
+  setUser: (user: UserResponse) => void;
+  login: (user: UserResponse, accessToken: string, refreshToken: string) => void;
   logout: () => void;
 }
 
