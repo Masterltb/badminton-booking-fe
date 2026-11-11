@@ -1,5 +1,5 @@
 import type { VenueResponse } from '@/types/backend';
-import { MapPin, Star, Clock } from 'lucide-react';
+import { MapPin, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 

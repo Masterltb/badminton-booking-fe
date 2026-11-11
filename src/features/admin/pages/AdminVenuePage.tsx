@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getAdminVenues, approveVenue, rejectVenue } from '../api/admin';
 import { VenueStatus } from '@/types/enums';
 import { Button } from '@/components/ui/button';
-import { Loader2, CheckCircle, XCircle, Eye } from 'lucide-react';
+import { CheckCircle, XCircle, Eye } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export const AdminVenuePage = () => {

@@ -1,4 +1,4 @@
-import { BookingStatus, PaymentMethod } from '@/types/enums';
+import { PaymentMethod } from '@/types/enums';
 
 export interface CreateBookingPayload {
   courtId: number;

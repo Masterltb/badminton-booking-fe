@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Search, MapPin, Calendar, Clock, Star } from 'lucide-react';
+import { Search, Star } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { getVenues } from '@/features/booking/api/venue';
 import { VenueCard } from '@/features/booking/components/VenueCard';

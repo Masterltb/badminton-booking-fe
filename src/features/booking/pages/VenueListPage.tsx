@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getVenues } from '../api/venue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search, MapPin, Star } from 'lucide-react';
-import { useDebounce } from '@/hooks/useDebounce'; // Assuming this hook exists or I'll implement a simple one
 
 // Simple debounce implementation if not exists, but I'll check first.
 // For now, I'll just trigger search on Enter or Button click to avoid complexity if hook is missing.

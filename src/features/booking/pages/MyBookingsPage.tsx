@@ -1,10 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/config/api';
-import { Loader2, Calendar, Clock, MapPin, XCircle, QrCode } from 'lucide-react';
+import { Loader2, Calendar, MapPin, XCircle, QrCode } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { BookingResponse } from '@/types/backend';
-import { BookingStatus } from '@/types/enums';
-import { formatCurrency } from '@/lib/utils'; // Assuming this exists or I'll use Intl directly
 
 const getStatusColor = (status: string) => {
   switch (status) {

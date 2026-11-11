@@ -233,7 +233,7 @@ export const BookingWidget = ({ venue }: BookingWidgetProps) => {
   // Logic: Submit (Fixed)
   const fixedBookingMutation = useMutation({
     mutationFn: createBookingSchedule,
-    onSuccess: (data) => {
+    onSuccess: () => {
        // Since it returns a list of bookings, maybe just redirect to first one or a summary page
        // For now, redirect to My Bookings or the first payment if bulk payment not implemented fully
        // Requirement says "Payment: Thanh toán một lần cho toàn bộ".

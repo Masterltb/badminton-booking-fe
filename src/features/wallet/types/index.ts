@@ -39,9 +39,10 @@ export interface Transaction {
   updatedAt: string;
 }
 
+export type TransactionResponse = Transaction;
+
 export interface DepositPayload {
   amount: number;
-  paymentMethod: 'VNPAY' | 'BANK_TRANSFER';
 }
 
 export interface WithdrawPayload {

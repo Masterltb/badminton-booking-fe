@@ -2,6 +2,12 @@ import axios, { AxiosError } from 'axios';
 import { useAuthStore } from '@/stores/useAuthStore';
 import type { ApiError } from '@/types/backend';
 
+declare module 'axios' {
+  interface InternalAxiosRequestConfig {
+    _retry?: boolean;
+  }
+}
+
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '/api/v1',
   headers: {

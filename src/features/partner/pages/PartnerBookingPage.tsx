@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getPartnerBookings, checkInBooking } from '../api/partner';
-import { Loader2, QrCode, Search, CheckCircle2 } from 'lucide-react';
+import { Loader2, QrCode } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
@@ -11,7 +11,7 @@ export const PartnerBookingPage = () => {
   
   const { data: bookingPage, isLoading } = useQuery({
     queryKey: ['partner-bookings'],
-    queryFn: () => getPartnerBookings({ page: 0, size: 20 })
+    queryFn: () => getPartnerBookings({ page: 0 })
   });
 
   const checkinMutation = useMutation({

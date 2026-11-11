@@ -16,7 +16,7 @@ const CLOSE_TIMES = Array.from({ length: 24 }, (_, i) => `${(i + 1).toString().p
 // Schema Validation
 const venueSchema = z.object({
   name: z.string().min(3, "Tên sân phải có ít nhất 3 ký tự"),
-  description: z.string().optional().default(""),
+  description: z.string().default(""),
   address: z.string().min(5, "Địa chỉ quá ngắn"),
   province: z.string().min(2, "Vui lòng nhập Tỉnh/Thành"),
   district: z.string().min(2, "Vui lòng nhập Quận/Huyện"),
@@ -33,7 +33,8 @@ const venueSchema = z.object({
   path: ["closeTime"],
 });
 
-type VenueFormValues = z.infer<typeof venueSchema>;
+type VenueFormInput = z.input<typeof venueSchema>;
+type VenueFormValues = z.output<typeof venueSchema>;
 
 export const PartnerCreateVenuePage = () => {
   const navigate = useNavigate();
@@ -41,7 +42,7 @@ export const PartnerCreateVenuePage = () => {
     register, 
     handleSubmit, 
     formState: { errors } 
-  } = useForm<VenueFormValues>({
+  } = useForm<VenueFormInput, unknown, VenueFormValues>({
     resolver: zodResolver(venueSchema),
     defaultValues: {
       openTime: "06:00",

@@ -1,19 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { deposit, payBooking } from '@/features/wallet/api/wallet';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Loader2, Clock, Smartphone, CheckCircle2, ArrowLeft, Copy, Edit2, Lock } from 'lucide-react';
+import { Clock, ArrowLeft, Edit2, Lock } from 'lucide-react';
 
 // Helper: Format Currency
-const formatCurrency = (amount: number) => 
-  new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
-
 export const DepositPage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   
   const bookingIdParam = searchParams.get('bookingId');
   const initialAmountParam = searchParams.get('amount');
@@ -24,7 +18,6 @@ export const DepositPage = () => {
 
   // Mode: If bookingId exists, we are in "Payment Mode", otherwise "Deposit Mode"
   const isPaymentMode = !!bookingIdParam;
-  const transferContent = isPaymentMode ? `THANH TOAN DON ${bookingIdParam}` : `NAP ${amount} VND`;
 
   // Countdown Timer
   useEffect(() => {
@@ -36,41 +29,6 @@ export const DepositPage = () => {
 
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
-
-  // Mutation 1: Deposit
-  const depositMutation = useMutation({
-    mutationFn: deposit,
-    onSuccess: async () => {
-      // If Payment Mode, proceed to Pay Booking
-      if (isPaymentMode && bookingIdParam) {
-         payBookingMutation.mutate(parseInt(bookingIdParam));
-      } else {
-         alert("Nạp tiền thành công! Số dư đã được cập nhật.");
-         queryClient.invalidateQueries({ queryKey: ['wallet-me'] });
-         navigate('/wallet');
-      }
-    },
-    onError: (err: any) => alert(err.message || "Nạp tiền thất bại.")
-  });
-
-  // Mutation 2: Pay Booking (Chained after Deposit)
-  const payBookingMutation = useMutation({
-     mutationFn: payBooking,
-     onSuccess: () => {
-        alert("Thanh toán đơn hàng thành công!");
-        queryClient.invalidateQueries({ queryKey: ['my-bookings'] });
-        navigate('/my-bookings');
-     },
-     onError: (err: any) => {
-        alert("Nạp tiền thành công nhưng thanh toán đơn hàng thất bại: " + err.message);
-        navigate('/my-bookings'); // Still redirect to bookings
-     }
-  });
-
-  const isLoading = depositMutation.isPending || payBookingMutation.isPending;
-
-  const qrData = `2|99|0987654321|MOMO|0|0|0|${amount}|${transferContent}|transfer_myqr`;
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(qrData)}`;
 
   return (
     <div className="bg-[#a50064] min-h-screen flex items-center justify-center p-4 font-sans">
@@ -89,7 +47,7 @@ export const DepositPage = () => {
                 
                 <div className="mb-8">
                    <h1 className="text-3xl font-bold mb-1">Thanh toán</h1>
-                   <p className="text-pink-200 text-sm">Qua Ví MoMo (Giả lập)</p>
+                   <p className="text-pink-200 text-sm">Luồng thanh toán đang ở chế độ demo</p>
                 </div>
                 
                 <div className="space-y-6 border-t border-white/20 pt-6">
@@ -117,7 +75,7 @@ export const DepositPage = () => {
                    </div>
                    <div>
                        <p className="text-pink-200 text-xs uppercase tracking-wider mb-1">Mã giao dịch</p>
-                       <p className="font-mono text-sm opacity-90 bg-white/10 inline-block px-2 py-1 rounded">MM{Date.now().toString().slice(-8)}</p>
+                       <p className="font-mono text-sm opacity-90 bg-white/10 inline-block px-2 py-1 rounded">Demo</p>
                    </div>
                 </div>
              </div>
@@ -136,65 +94,22 @@ export const DepositPage = () => {
           {/* Right: Scan QR Interface */}
           <div className="p-10 md:w-7/12 bg-gray-50 relative flex flex-col items-center">
              
-             <div className="w-full flex justify-center mb-8">
-                <div className="bg-white p-4 rounded-3xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] border border-gray-100 relative group">
-                   <img src={qrUrl} alt="MoMo QR" className="w-64 h-64 object-contain rounded-xl" />
-                   
-                   {/* Logo overlay */}
-                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-1.5 rounded-lg shadow-sm">
-                      <div className="w-8 h-8 bg-[#a50064] rounded-md flex items-center justify-center text-white font-bold text-xs">
-                         MoMo
-                      </div>
-                   </div>
-                   
-                   {/* Scan animation */}
-                   <div className="absolute left-4 right-4 top-4 h-0.5 bg-[#a50064] shadow-[0_0_15px_#a50064] animate-[scan_2.5s_ease-in-out_infinite] opacity-80"></div>
-                </div>
-             </div>
-
              <div className="text-center w-full max-w-md">
-                <h2 className="text-gray-900 font-bold text-xl mb-2">Quét mã để thanh toán</h2>
-                <p className="text-gray-500 text-sm mb-8">
-                   Sử dụng App <span className="text-[#a50064] font-bold">MoMo</span> hoặc ứng dụng Camera hỗ trợ QR Code để quét mã.
-                </p>
-
-                {/* Transfer Content Box */}
-                <div className="bg-white border border-dashed border-gray-300 rounded-xl p-4 mb-8 flex items-center justify-between group hover:border-[#a50064] transition-colors cursor-pointer"
-                     onClick={() => { navigator.clipboard.writeText(transferContent); alert("Đã sao chép nội dung!"); }}
-                >
-                   <div className="text-left">
-                      <p className="text-xs text-gray-500 uppercase font-semibold">Nội dung chuyển khoản</p>
-                      <p className="text-[#a50064] font-bold font-mono text-lg">{transferContent}</p>
-                   </div>
-                   <Button variant="ghost" size="icon" className="text-gray-400 group-hover:text-[#a50064]">
-                      <Copy size={20} />
-                   </Button>
+                <div className="rounded-2xl border border-amber-300 bg-amber-50 p-8 text-left">
+                  <h2 className="text-lg font-bold text-amber-900">Chưa kết nối cổng thanh toán</h2>
+                  <p className="mt-2 text-sm text-amber-800">
+                    Mã QR demo đã được gỡ bỏ. Không chuyển tiền qua trang này; số dư chỉ được cập nhật sau khi tích hợp cổng thanh toán có xác thực.
+                  </p>
+                  <Button disabled className="mt-5 w-full" aria-describedby="payment-unavailable">
+                    Thanh toán tạm thời chưa khả dụng
+                  </Button>
+                  <p id="payment-unavailable" className="mt-3 text-xs text-amber-700">
+                    {isPaymentMode ? `Đơn đặt sân ${bookingIdParam} chưa được thanh toán.` : 'Tính năng nạp tiền đang chờ tích hợp nhà cung cấp.'}
+                  </p>
                 </div>
-
-                {/* Action Button */}
-                <Button 
-                   onClick={() => depositMutation.mutate({ amount })}
-                   disabled={isLoading}
-                   className="w-full bg-[#a50064] hover:bg-[#8e0056] text-white font-bold py-6 text-lg rounded-xl shadow-lg shadow-pink-200 transition-all active:scale-[0.98]"
-                >
-                   {isLoading ? <Loader2 className="animate-spin mr-2" /> : <CheckCircle2 className="mr-2" />}
-                   {isLoading ? 'Đang xử lý...' : 'Xác nhận đã thanh toán'}
-                </Button>
-                
-                <p className="text-xs text-gray-400 mt-4">
-                   *Bấm vào nút trên sau khi bạn đã chuyển khoản thành công trên điện thoại.
-                </p>
              </div>
           </div>
        </div>
-       <style>{`
-         @keyframes scan {
-           0% { top: 4%; opacity: 0; }
-           10% { opacity: 1; }
-           90% { opacity: 1; }
-           100% { top: 96%; opacity: 0; }
-         }
-       `}</style>
     </div>
   );
 };

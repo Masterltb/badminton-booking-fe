@@ -1,5 +1,3 @@
-import { VenueStatus, CourtStatus } from '@/types/enums';
-
 export interface CreateVenuePayload {
   name: string;
   description: string;
@@ -10,19 +8,19 @@ export interface CreateVenuePayload {
   openTime: string;
   closeTime: string;
   phoneContact: string;
-  images: string[];
 }
 
 export interface CreateCourtPayload {
   name: string;
-  pricePerHour: number;
-  status: CourtStatus;
 }
 
 export interface PricingConfigPayload {
-  startTime: string; // "06:00"
-  endTime: string;   // "17:00"
-  factor: number;    // 1.0, 1.2, 0.8
+  courtId: number | null;
+  startTime: string;
+  endTime: string;
+  pricePerHour: number;
+  priority: number;
+  daysOfWeek: string;
 }
 
 export interface PartnerStats {

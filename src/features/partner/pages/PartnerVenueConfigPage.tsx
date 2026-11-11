@@ -5,7 +5,7 @@ import { getVenueById } from '@/features/booking/api/venue';
 import { addCourt, configurePricing } from '../api/partner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ArrowLeft, Plus, Save } from 'lucide-react';
+import { ArrowLeft, Plus } from 'lucide-react';
 import type { PricingConfigPayload } from '../types';
 
 export const PartnerVenueConfigPage = () => {

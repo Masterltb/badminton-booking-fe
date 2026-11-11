@@ -2,7 +2,6 @@ import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getVenueById } from '../api/venue';
 import { BookingWidget } from '../components/BookingWidget';
-import { Button } from '@/components/ui/button';
 
 export const VenueDetailPage = () => {
   const { id } = useParams<{ id: string }>();
