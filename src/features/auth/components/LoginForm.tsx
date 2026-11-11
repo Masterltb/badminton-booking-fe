@@ -7,6 +7,7 @@ import { loginWithEmail } from '../api/login';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useState } from 'react';
 import { Role } from '@/types/enums';
+import { getErrorMessage } from '@/lib/errors';
 
 const loginSchema = z.object({
   email: z.string().email('Email không hợp lệ'),
@@ -42,9 +43,9 @@ export const LoginForm = () => {
         navigate('/');
       }
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       // Backend returns { message: "..." }
-      const msg = error.message || 'Đăng nhập thất bại';
+      const msg = getErrorMessage(error, 'Đăng nhập thất bại');
       setErrorMsg(msg);
     },
   });

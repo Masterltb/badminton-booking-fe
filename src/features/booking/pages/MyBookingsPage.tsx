@@ -3,6 +3,7 @@ import api from '@/config/api';
 import { Loader2, Calendar, MapPin, XCircle, QrCode } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { BookingResponse } from '@/types/backend';
+import { getErrorMessage } from '@/lib/errors';
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -44,8 +45,8 @@ export const MyBookingsPage = () => {
       alert("Đã hủy lịch đặt thành công!");
       queryClient.invalidateQueries({ queryKey: ['my-bookings'] });
     },
-    onError: (err: any) => {
-      alert(err.response?.data?.message || "Không thể hủy lịch đặt này.");
+    onError: (err: unknown) => {
+      alert(getErrorMessage(err, "Không thể hủy lịch đặt này."));
     }
   });
 

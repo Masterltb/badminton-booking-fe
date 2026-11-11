@@ -21,7 +21,7 @@ export const AdminVenuePage = () => {
       alert("Đã duyệt sân thành công!");
       queryClient.invalidateQueries({ queryKey: ['admin-venues'] });
     },
-    onError: (err: any) => alert("Lỗi: " + err.message)
+    onError: (err: Error) => alert("Lỗi: " + err.message)
   });
 
   const rejectMutation = useMutation({
@@ -30,7 +30,7 @@ export const AdminVenuePage = () => {
       alert("Đã từ chối sân!");
       queryClient.invalidateQueries({ queryKey: ['admin-venues'] });
     },
-    onError: (err: any) => alert("Lỗi: " + err.message)
+    onError: (err: Error) => alert("Lỗi: " + err.message)
   });
 
   const tabs = [

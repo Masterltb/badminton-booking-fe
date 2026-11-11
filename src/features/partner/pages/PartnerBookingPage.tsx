@@ -4,6 +4,7 @@ import { getPartnerBookings, checkInBooking } from '../api/partner';
 import { Loader2, QrCode } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { getErrorMessage } from '@/lib/errors';
 
 export const PartnerBookingPage = () => {
   const queryClient = useQueryClient();
@@ -21,8 +22,8 @@ export const PartnerBookingPage = () => {
         setCheckinCode("");
         queryClient.invalidateQueries({ queryKey: ['partner-bookings'] });
     },
-    onError: (err: any) => {
-        alert("Lỗi: " + (err.response?.data?.message || err.message));
+    onError: (err: unknown) => {
+        alert("Lỗi: " + getErrorMessage(err, 'Không thể check-in booking.'));
     }
   });
 

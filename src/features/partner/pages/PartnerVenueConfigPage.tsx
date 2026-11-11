@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ArrowLeft, Plus } from 'lucide-react';
 import type { PricingConfigPayload } from '../types';
+import { getErrorMessage } from '@/lib/errors';
 
 export const PartnerVenueConfigPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -30,7 +31,7 @@ export const PartnerVenueConfigPage = () => {
       resetCourt();
       queryClient.invalidateQueries({ queryKey: ['venue', venueId] });
     },
-    onError: (err: any) => alert(err.message)
+    onError: (err: unknown) => alert(getErrorMessage(err, 'Không thể thêm sân.'))
   });
 
   // --- Pricing Mutation ---
@@ -41,7 +42,7 @@ export const PartnerVenueConfigPage = () => {
     onSuccess: () => {
       alert('Cấu hình giá thành công!');
     },
-    onError: (err: any) => alert(err.message)
+    onError: (err: unknown) => alert(getErrorMessage(err, 'Không thể lưu bảng giá.'))
   });
 
   if (isLoading) return <div>Loading...</div>;

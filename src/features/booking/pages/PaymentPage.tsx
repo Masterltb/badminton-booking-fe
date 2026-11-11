@@ -1,27 +1,27 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getBookingById } from '../api/venue';
-import { getMyWallet, payBooking, deposit } from '@/features/wallet/api/wallet';
+import { getMyWallet, payBooking } from '@/features/wallet/api/wallet';
 import { Button } from '@/components/ui/button';
 import { PaymentMethod } from '@/types/enums';
 import { Loader2, Wallet, CheckCircle2 } from 'lucide-react';
+import type { BookingResponse } from '@/types/backend';
+import type { WalletResponse } from '@/features/wallet/types';
+import { getErrorMessage } from '@/lib/errors';
 
 // Helper: Format Currency
 const formatCurrency = (amount: number) => 
   new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
 
 // --- COMPONENT: Wallet Payment ---
-const WalletPaymentUI = ({ booking, wallet, onPay, loading, onDeposit, depositing }: { 
-    booking: any, 
-    wallet: any, 
+const WalletPaymentUI = ({ booking, wallet, onPay, loading }: { 
+    booking: BookingResponse,
+    wallet: WalletResponse | undefined,
     onPay: () => void, 
-    loading: boolean,
-    onDeposit: (amount: number) => void,
-    depositing: boolean
+    loading: boolean
 }) => {
    const balance = wallet?.balance || 0;
    const canPay = balance >= booking.totalPrice;
-   const missingAmount = booking.totalPrice - balance;
 
    return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -55,14 +55,12 @@ const WalletPaymentUI = ({ booking, wallet, onPay, loading, onDeposit, depositin
                            {loading ? <Loader2 className="animate-spin" /> : "Xác nhận Thanh toán"}
                         </Button>
                     ) : (
-                        <Button 
-                           variant="destructive" 
-                           className="w-full py-6"
-                           onClick={() => onDeposit(missingAmount)}
-                           disabled={depositing}
-                        >
-                           {depositing ? <Loader2 className="animate-spin" /> : `Nạp thêm ${formatCurrency(missingAmount)}`}
+                      <div className="space-y-3">
+                        <Button variant="destructive" className="w-full py-6" disabled>
+                          Nạp tiền chưa khả dụng
                         </Button>
+                        <p className="text-center text-xs text-gray-500">Cổng thanh toán chưa được tích hợp; số dư không thể được tự xác nhận.</p>
+                      </div>
                     )}
                 </div>
              </div>
@@ -96,16 +94,7 @@ export const PaymentPage = () => {
        queryClient.invalidateQueries({ queryKey: ['booking', bookingId] });
        navigate('/my-bookings');
     },
-    onError: (err: any) => alert(err.message || "Thanh toán thất bại")
-  });
-
-  const depositMutation = useMutation({
-    mutationFn: deposit,
-    onSuccess: () => {
-        alert("Nạp tiền thành công!");
-        queryClient.invalidateQueries({ queryKey: ['wallet-me'] });
-    },
-    onError: (err: any) => alert(err.message || "Nạp tiền thất bại")
+    onError: (err: unknown) => alert(getErrorMessage(err, "Thanh toán thất bại"))
   });
 
   if (loadingBooking || loadingWallet) return (
@@ -124,10 +113,8 @@ export const PaymentPage = () => {
       return (
           <div className="flex items-center justify-center h-screen">
              <div className="text-center">
-                 <p className="mb-4">Đơn hàng này cần thanh toán qua VNPAY.</p>
-                 <Button onClick={() => navigate(`/wallet/deposit?bookingId=${booking.id}&amount=${booking.totalPrice}`)}>
-                    Thanh toán ngay (Giả lập MoMo)
-                 </Button>
+                 <p className="mb-4">Đơn hàng này cần thanh toán qua VNPAY, nhưng cổng thanh toán chưa được cấu hình.</p>
+                 <Button disabled>Thanh toán chưa khả dụng</Button>
              </div>
           </div>
       );
@@ -139,8 +126,6 @@ export const PaymentPage = () => {
         wallet={wallet} 
         onPay={() => payMutation.mutate(bookingId)} 
         loading={payMutation.isPending}
-        onDeposit={(amount) => depositMutation.mutate({ amount })}
-        depositing={depositMutation.isPending}
     />
   );
 };

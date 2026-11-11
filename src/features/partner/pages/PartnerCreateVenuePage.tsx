@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Loader2, ArrowLeft } from 'lucide-react';
 import type { CreateVenuePayload } from '../types';
+import { getErrorMessage } from '@/lib/errors';
 
 // Generate Time Options
 const OPEN_TIMES = Array.from({ length: 24 }, (_, i) => `${i.toString().padStart(2, '0')}:00`);
@@ -58,8 +59,8 @@ export const PartnerCreateVenuePage = () => {
       // Could show toast here
       navigate('/partner');
     },
-    onError: (err: any) => {
-      alert("Lỗi tạo sân: " + (err.response?.data?.message || err.message));
+    onError: (err: unknown) => {
+      alert("Lỗi tạo sân: " + getErrorMessage(err, 'Không thể tạo sân.'));
     }
   });
 

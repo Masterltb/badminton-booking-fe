@@ -34,25 +34,7 @@ export const PartnerDashboardPage = () => {
     queryFn: () => getPartnerStats({ fromDate, toDate })
   });
 
-  // Helper to parse revenue safely
-  const calculateRevenue = (data: any) => {
-    if (!data) return 0;
-    // Case 1: Direct number
-    if (typeof data === 'number') return data;
-    // Case 2: Object with totalRevenue or revenue
-    if (typeof data === 'object') {
-        if ('totalRevenue' in data) return data.totalRevenue;
-        if ('revenue' in data) return data.revenue;
-        if ('amount' in data) return data.amount;
-        // Case 3: Array of records (sum them up)
-        if (Array.isArray(data)) {
-            return data.reduce((acc: number, item: any) => acc + (item.revenue || item.amount || 0), 0);
-        }
-    }
-    return 0;
-  };
-
-  const revenue = calculateRevenue(revenueStats);
+  const revenue = revenueStats?.revenueThisMonth ?? 0;
 
   return (
     <div className="p-6 max-w-7xl mx-auto">

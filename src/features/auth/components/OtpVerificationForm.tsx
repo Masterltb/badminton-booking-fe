@@ -7,6 +7,7 @@ import { verifyOtp, resendOtp } from '../api/register';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { getErrorMessage } from '@/lib/errors';
 
 const otpSchema = z.object({
   otp: z.string().length(6, 'Mã OTP phải có 6 ký tự'),
@@ -50,8 +51,8 @@ export const OtpVerificationForm = () => {
       setSuccessMsg('Xác thực thành công! Đang chuyển hướng đăng nhập...');
       setTimeout(() => navigate('/auth/login'), 2000);
     },
-    onError: (error: any) => {
-        const msg = error.response?.data?.message || error.message || 'Mã OTP không đúng';
+    onError: (error: unknown) => {
+        const msg = getErrorMessage(error, 'Mã OTP không đúng');
         setErrorMsg(msg);
     },
   });
@@ -62,8 +63,8 @@ export const OtpVerificationForm = () => {
       setSuccessMsg('Đã gửi lại mã OTP.');
       setCountdown(60); // 60s cooldown
     },
-    onError: (error: any) => {
-        const msg = error.response?.data?.message || error.message || 'Gửi lại OTP thất bại';
+    onError: (error: unknown) => {
+        const msg = getErrorMessage(error, 'Gửi lại OTP thất bại');
         setErrorMsg(msg);
     },
   });

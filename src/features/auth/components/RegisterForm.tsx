@@ -6,6 +6,7 @@ import { useMutation } from '@tanstack/react-query';
 import { registerWithEmail } from '../api/register';
 import { useState } from 'react';
 import { Role } from '@/types/enums';
+import { getErrorMessage } from '@/lib/errors';
 
 const registerSchema = z.object({
   fullName: z.string().min(2, 'Tên quá ngắn'),
@@ -43,8 +44,8 @@ export const RegisterForm = () => {
       setSuccessMsg('Đăng ký thành công! Vui lòng kiểm tra email để lấy mã OTP.');
       setTimeout(() => navigate('/auth/verify-otp', { state: { email: variables.email } }), 1500);
     },
-    onError: (error: any) => {
-      const msg = error.response?.data?.message || error.message || 'Đăng ký thất bại';
+    onError: (error: unknown) => {
+      const msg = getErrorMessage(error, 'Đăng ký thất bại');
       setErrorMsg(msg);
     },
   });

@@ -8,6 +8,7 @@ import { createBooking, createBookingSchedule } from '../api/venue';
 import { getMyWallet } from '@/features/wallet/api/wallet';
 import type { VenueResponse, CourtResponse } from '@/types/backend';
 import { PaymentMethod } from '@/types/enums';
+import { getErrorMessage, getErrorStatus } from '@/lib/errors';
 import { Loader2, AlertCircle, Calendar as CalendarIcon, CreditCard, Repeat, Clock } from 'lucide-react';
 
 interface BookingWidgetProps {
@@ -209,23 +210,13 @@ export const BookingWidget = ({ venue }: BookingWidgetProps) => {
   const bookingMutation = useMutation({
     mutationFn: createBooking,
     onSuccess: (data) => {
-       console.log("Booking created:", data);
-       // Cast to any because paymentUrl/paymentRef might not be in the strict type yet
-       const responseData = data as any;
-       
-       if (data.paymentMethod === PaymentMethod.VNPAY && (responseData.paymentUrl || responseData.paymentRef)) {
-          // Redirect to external/mock payment gateway
-          window.location.href = responseData.paymentUrl || responseData.paymentRef;
-       } else {
-          // Internal Wallet Payment Flow
-          navigate(`/payment/${data.id}`);
-       }
+       navigate(`/payment/${data.id}`);
     },
-    onError: (err: any) => {
-      if (err.status === 409) {
+    onError: (err: unknown) => {
+      if (getErrorStatus(err) === 409) {
           setError("Khung giờ này vừa bị đặt bởi người khác. Vui lòng chọn giờ khác.");
       } else {
-          setError(err.message || "Đặt sân thất bại. Vui lòng thử lại.");
+          setError(getErrorMessage(err, "Đặt sân thất bại. Vui lòng thử lại."));
       }
     }
   });
@@ -242,8 +233,8 @@ export const BookingWidget = ({ venue }: BookingWidgetProps) => {
        navigate('/my-bookings'); 
        // Ideally: navigate(`/payment-bulk/${groupId}`) if API supported it.
     },
-    onError: (err: any) => {
-       setError(err.message || "Đặt lịch cố định thất bại.");
+    onError: (err: unknown) => {
+       setError(getErrorMessage(err, "Đặt lịch cố định thất bại."));
     }
   });
 

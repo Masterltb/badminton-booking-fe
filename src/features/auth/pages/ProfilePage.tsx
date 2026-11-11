@@ -32,6 +32,7 @@ export const ProfilePage = () => {
   // Mock Mutation for Profile Update
   const updateProfileMutation = useMutation({
     mutationFn: async (data: ProfileFormValues & { avatarUrl?: string }) => {
+       if (!user) throw new Error('Bạn cần đăng nhập để cập nhật hồ sơ.');
        // Simulate API call delay
        await new Promise(resolve => setTimeout(resolve, 1000));
        
@@ -43,10 +44,10 @@ export const ProfilePage = () => {
          // Phone/Email might be restricted but let's allow updating local state for demo
          phone: data.phone,
          email: data.email,
-         avatarUrl: data.avatarUrl || user?.avatarUrl
+         avatarUrl: data.avatarUrl || user.avatarUrl
        };
     },
-    onSuccess: (updatedUser: any) => {
+    onSuccess: (updatedUser) => {
        setUser(updatedUser);
        alert("Cập nhật hồ sơ thành công!");
     },

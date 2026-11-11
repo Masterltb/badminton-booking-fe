@@ -65,7 +65,7 @@ export const WalletPage = () => {
           ) : transactions?.content?.length === 0 ? (
              <div className="p-12 text-center text-gray-400">Chưa có giao dịch nào</div>
           ) : (
-            transactions?.content?.map((tx: any) => (
+            transactions?.content?.map((tx) => (
               <div key={tx.id} className="p-4 hover:bg-gray-50 transition-colors flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
